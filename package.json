@@ -1,0 +1,28 @@
+{
+  "name": "devassist-ai",
+  "private": true,
+  "version": "0.1.0",
+  "description": "DevAssist AI monorepo",
+  "type": "module",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:web": "npm run dev -w apps/web",
+    "dev:api": "npm run dev -w apps/api",
+    "build": "npm run build --workspaces --if-present",
+    "build:web": "npm run build -w apps/web",
+    "build:api": "npm run build -w apps/api",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:fix": "npm run lint:fix --workspaces --if-present",
+    "format": "npm run format --workspaces --if-present",
+    "format:check": "npm run format:check --workspaces --if-present",
+    "test": "npm run test:run --workspaces --if-present",
+    "test:web": "npm run test:run -w apps/web",
+    "start:api": "npm run start -w apps/api"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
+}
