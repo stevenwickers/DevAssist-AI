@@ -33,6 +33,6 @@ export async function sendPortfolioChat(
 
   return {
     reply: data.reply,
-    sources: data.sources,
+    sources: data.sources ?? [],
   }
 }

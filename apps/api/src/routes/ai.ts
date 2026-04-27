@@ -1,6 +1,10 @@
 import express from 'express'
-import OpenAI from 'openai'
 import { getElapsedMs, logAiDemoEvent } from '../lib/ai-demo-logger.js'
+import {
+  getOpenAiClient,
+  isOpenAiConfigured,
+  missingOpenAiKeyMessage,
+} from '../lib/openai-config.js'
 import { createRateLimit } from '../middleware/rate-limit.js'
 
 const router = express.Router();
@@ -10,11 +14,13 @@ const aiRateLimit = createRateLimit({
   maxRequests: Number(process.env.AI_RATE_LIMIT_MAX_REQUESTS) || 10,
 })
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
-
 const askModel = process.env.AI_ASK_MODEL ?? 'gpt-4o-mini'
+
+router.get('/status', (_req, res) => {
+  res.json({
+    openAiConfigured: isOpenAiConfigured(),
+  })
+})
 
 /**
  * @swagger
@@ -80,6 +86,11 @@ const askModel = process.env.AI_ASK_MODEL ?? 'gpt-4o-mini'
 router.post('/ask', aiRateLimit, async (req, res) => {
   const { prompt } = req.body
 
+  if (!isOpenAiConfigured()) {
+    res.status(503).json({ error: missingOpenAiKeyMessage })
+    return
+  }
+
   if (typeof prompt !== 'string') {
     res.status(400).json({ error: 'prompt is required' })
     return
@@ -113,7 +124,7 @@ router.post('/ask', aiRateLimit, async (req, res) => {
       messages: 1,
     })
 
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAiClient().chat.completions.create({
       model: askModel,
       messages: [{ role: 'user', content: trimmedPrompt }],
     })

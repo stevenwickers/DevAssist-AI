@@ -1,19 +1,19 @@
 import express from 'express'
-import OpenAI from 'openai'
 import { getElapsedMs, logAiDemoEvent } from '../lib/ai-demo-logger.js'
 import { createRateLimit } from '../middleware/rate-limit.js'
 import { retrievePortfolioChunks } from '../lib/portfolio/retrieve-chunks.js'
 import { buildPortfolioChatMessages } from '../lib/portfolio/build-portfolio-chat-messages.js'
+import {
+  getOpenAiClient,
+  isOpenAiConfigured,
+  missingOpenAiKeyMessage,
+} from '../lib/openai-config.js'
 
 const router = express.Router()
 
 const portfolioRateLimit = createRateLimit({
   windowMs: Number(process.env.AI_RATE_LIMIT_WINDOW_MS) || 60_000,
   maxRequests: Number(process.env.AI_RATE_LIMIT_MAX_REQUESTS) || 10,
-})
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
 })
 
 const portfolioChatModel = process.env.PORTFOLIO_CHAT_MODEL ?? 'gpt-4o-mini'
@@ -101,6 +101,11 @@ router.post('/portfolio-chat', portfolioRateLimit, async (req, res) => {
     history?: unknown
   }
 
+  if (!isOpenAiConfigured()) {
+    res.status(503).json({ error: missingOpenAiKeyMessage })
+    return
+  }
+
   if (typeof message !== 'string' || !message.trim()) {
     res.status(400).json({ error: 'message is required' })
     return
@@ -156,7 +161,7 @@ router.post('/portfolio-chat', portfolioRateLimit, async (req, res) => {
       chunks: retrievedChunks.length,
     })
 
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAiClient().chat.completions.create({
       model: portfolioChatModel,
       messages,
     })

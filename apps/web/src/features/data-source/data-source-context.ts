@@ -5,6 +5,7 @@ export type DataSource = 'mock' | 'api';
 export type DataSourceContextValue = {
   dataSource: DataSource;
   useApi: boolean;
+  isApiConfigured: boolean | null;
   setUseApi: (value: boolean) => void;
 };
 

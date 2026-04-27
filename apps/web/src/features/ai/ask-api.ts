@@ -14,7 +14,11 @@ export async function askAi(prompt: string): Promise<string> {
   })
 
   if (!response.ok) {
-    throw new Error('Failed to call the AI API.')
+    const errorBody = (await response.json().catch(() => null)) as
+      | { error?: string }
+      | null
+
+    throw new Error(errorBody?.error ?? 'Failed to call the AI API.')
   }
 
   const data = (await response.json()) as AskResponse
