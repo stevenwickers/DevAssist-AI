@@ -10,13 +10,13 @@ type RateLimitEntry = {
   resetAt: number;
 };
 
-const clients = new Map<string, RateLimitEntry>()
-
 function getClientId(req: Request) {
   return req.ip || req.socket.remoteAddress || 'unknown'
 }
 
 export function createRateLimit({ windowMs, maxRequests }: RateLimitOptions) {
+  const clients = new Map<string, RateLimitEntry>()
+
   return (req: Request, res: Response, next: NextFunction) => {
     const now = Date.now()
     const clientId = getClientId(req)
