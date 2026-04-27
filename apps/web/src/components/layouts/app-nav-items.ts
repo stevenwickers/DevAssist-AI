@@ -24,10 +24,10 @@ export const appNavItems: AppNavItem[] = [
     description: 'Project overview',
   },
   {
-    title: 'Summarizer',
-    to: SUMMARIZE_ROUTE,
-    icon: FileText,
-    description: 'Summaries and action items',
+    title: 'Portfolio Chat',
+    to: PORTFOLIO_CHAT_ROUTE,
+    icon: MessageSquareText,
+    description: 'Grounded portfolio assistant',
   },
   {
     title: 'Code Explainer',
@@ -36,9 +36,9 @@ export const appNavItems: AppNavItem[] = [
     description: 'Plain-English code explanations',
   },
   {
-    title: 'Portfolio Chat',
-    to: PORTFOLIO_CHAT_ROUTE,
-    icon: MessageSquareText,
-    description: 'Grounded portfolio assistant',
+    title: 'Summarizer',
+    to: SUMMARIZE_ROUTE,
+    icon: FileText,
+    description: 'Summaries and action items',
   },
 ]

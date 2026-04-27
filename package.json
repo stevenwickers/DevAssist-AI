@@ -11,6 +11,7 @@
     "dev": "node scripts/dev.mjs",
     "dev:web": "npm run dev -w apps/web",
     "dev:api": "npm run dev -w apps/api",
+    "ingest:portfolio": "npm run ingest:portfolio -w apps/api",
     "build": "npm run build --workspaces --if-present",
     "build:web": "npm run build -w apps/web",
     "build:api": "npm run build -w apps/api",

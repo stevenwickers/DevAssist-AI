@@ -38,6 +38,7 @@ export function PortfolioChatPage() {
 
     const nextUserMessage = createMessage('user', trimmed)
 
+    debugger
     setMessages((prev) => [...prev, nextUserMessage])
     setInput('')
     setIsLoading(true)
@@ -62,6 +63,7 @@ export function PortfolioChatPage() {
         'Something went wrong while generating a response. Please try again.'
       )
 
+      debugger
       setMessages((prev) => [...prev, errorMessage])
     } finally {
       setIsLoading(false)

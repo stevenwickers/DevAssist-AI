@@ -163,6 +163,14 @@ In mock mode, the app returns a local code explanation. In API mode, the app sen
 
 In mock mode, the app returns a local portfolio-style response. In API mode, the app sends the recent conversation and the new question to the API.
 
+Before using Portfolio Chat in API mode, generate the retrieval index once:
+
+```sh
+npm run ingest:portfolio
+```
+
+This reads the markdown files under `data/portfolio` (or the legacy `data/protfolio` folder in this repo) and writes `data/portfolio-index.json`. The command requires `OPENAI_API_KEY` in `apps/api/.env` because it creates embeddings for retrieval.
+
 ## API
 
 The API currently exposes:

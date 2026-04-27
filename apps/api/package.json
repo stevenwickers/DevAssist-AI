@@ -9,6 +9,7 @@
   "keywords": [],
   "scripts": {
     "dev": "node --env-file=.env --watch --import tsx src/server.ts",
+    "ingest:portfolio": "node --env-file=.env --import tsx src/scripts/ingest-portfolio.ts",
     "build": "tsc",
     "prestart": "npm run build",
     "start": "node --env-file=.env dist/server.js"

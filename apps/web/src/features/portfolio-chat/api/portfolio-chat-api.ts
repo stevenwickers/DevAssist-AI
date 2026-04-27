@@ -1,33 +1,39 @@
-import { askAi } from '@/features/ai/ask-api.ts'
 import type {
   PortfolioChatRequest,
   PortfolioChatResponse,
 } from '../types.ts'
-
-function buildPortfolioChatPrompt({ message, history }: PortfolioChatRequest) {
-  const recentHistory = history
-    .slice(-6)
-    .map((item) => `${item.role}: ${item.content}`)
-    .join('\n')
-
-  return [
-    'You are a portfolio assistant for Steven Wickers.',
-    'Answer questions about projects, AI work, frontend development, backend API experience, architecture, and technical strengths.',
-    'If you do not have enough portfolio context, say what information would be needed instead of inventing details.',
-    recentHistory ? `Recent conversation:\n${recentHistory}` : '',
-    `User question:\n${message}`,
-  ]
-    .filter(Boolean)
-    .join('\n\n')
-}
+const apiUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:5000'
 
 export async function sendPortfolioChat(
   request: PortfolioChatRequest
 ): Promise<PortfolioChatResponse> {
-  const reply = await askAi(buildPortfolioChatPrompt(request))
+  const response = await fetch(`${apiUrl}/ai/portfolio-chat`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      message: request.message,
+      history: request.history.map((item) => ({
+        role: item.role,
+        content: item.content,
+      })),
+    }),
+  })
 
+  if (!response.ok) {
+    const errorBody = (await response.json().catch(() => null)) as
+      | { error?: string }
+      | null
+
+    throw new Error(errorBody?.error ?? 'Failed to call the portfolio chat API.')
+  }
+
+  const data = (await response.json()) as PortfolioChatResponse
+
+  debugger
   return {
-    reply,
-    sources: [{ id: 'openai-api', label: 'OpenAI API' }],
+    reply: data.reply,
+    sources: data.sources,
   }
 }
