@@ -1,5 +1,6 @@
 import express from 'express'
 import OpenAI from 'openai'
+import { getElapsedMs, logAiDemoEvent } from '../lib/ai-demo-logger.js'
 import { createRateLimit } from '../middleware/rate-limit.js'
 
 const router = express.Router();
@@ -12,6 +13,8 @@ const aiRateLimit = createRateLimit({
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
+
+const askModel = process.env.AI_ASK_MODEL ?? 'gpt-4o-mini'
 
 /**
  * @swagger
@@ -97,13 +100,38 @@ router.post('/ask', aiRateLimit, async (req, res) => {
   }
 
   try {
+    const startedAt = performance.now()
+
+    logAiDemoEvent('Express API received request', {
+      route: 'POST /ai/ask',
+      promptCharacters: trimmedPrompt.length,
+    })
+
+    logAiDemoEvent('Calling OpenAI chat completions API', {
+      route: 'POST /ai/ask',
+      model: askModel,
+      messages: 1,
+    })
+
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: askModel,
       messages: [{ role: 'user', content: trimmedPrompt }],
     })
 
-    res.json({ reply: completion.choices[0].message.content })
+    const reply = completion.choices[0].message.content
+
+    logAiDemoEvent('OpenAI response received', {
+      route: 'POST /ai/ask',
+      model: askModel,
+      durationMs: getElapsedMs(startedAt),
+      replyCharacters: reply?.length ?? 0,
+    })
+
+    res.json({ reply })
   } catch (error) {
+    logAiDemoEvent('OpenAI request failed', {
+      route: 'POST /ai/ask',
+    })
     console.error(error)
     res.status(500).send('Error communicating with OpenAI')
   }

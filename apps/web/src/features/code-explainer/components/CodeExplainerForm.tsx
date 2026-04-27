@@ -49,7 +49,10 @@ export function CodeExplainerForm({
   }, [characterCount, isOverLimit])
 
   return (
-    <section className="rounded-2xl border bg-card p-4 shadow-sm sm:p-6">
+    <section
+      className="rounded-2xl border bg-card p-4 shadow-sm sm:p-6"
+      aria-busy={isLoading}
+    >
       <div className="mb-5 flex flex-col gap-2">
         <h2 className="text-lg font-semibold tracking-tight">
           Paste your code
@@ -70,6 +73,7 @@ export function CodeExplainerForm({
             onChange={(event) => onCodeChange(event.target.value)}
             placeholder={'function add(a, b) {\n  return a + b;\n}'}
             className="min-h-[280px] resize-y font-mono text-sm"
+            disabled={isLoading}
           />
           <p
             className={`text-xs ${
@@ -85,6 +89,7 @@ export function CodeExplainerForm({
           <Select
             value={language}
             onValueChange={(value) => onLanguageChange(value as SupportedLanguage)}
+            disabled={isLoading}
           >
             <SelectTrigger id="code-language">
               <SelectValue placeholder="Select language" />
@@ -143,6 +148,12 @@ export function CodeExplainerForm({
             Load Example
           </Button>
         </div>
+
+        {isLoading ? (
+          <p className="text-sm text-muted-foreground" role="status">
+            Explaining the code. This can take a few seconds in API mode.
+          </p>
+        ) : null}
       </div>
     </section>
   )

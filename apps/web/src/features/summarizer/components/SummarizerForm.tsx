@@ -48,7 +48,10 @@ export function SummarizerForm({
   }, [characterCount, isOverLimit])
 
   return (
-    <section className="rounded-2xl border bg-card p-4 shadow-sm sm:p-6">
+    <section
+      className="rounded-2xl border bg-card p-4 shadow-sm sm:p-6"
+      aria-busy={isLoading}
+    >
       <div className="mb-5 flex flex-col gap-2">
         <h2 className="text-lg font-semibold tracking-tight">Paste your text</h2>
         <p className="text-sm text-muted-foreground">
@@ -66,6 +69,7 @@ export function SummarizerForm({
             onChange={(event) => onTextChange(event.target.value)}
             placeholder="Paste meeting notes, article text, or transcripts here..."
             className="min-h-[240px] resize-y"
+            disabled={isLoading}
           />
           <p
             className={`text-xs ${
@@ -81,6 +85,7 @@ export function SummarizerForm({
           <Select
             value={tone}
             onValueChange={(value) => onToneChange(value as SummaryTone)}
+            disabled={isLoading}
           >
             <SelectTrigger id="summarizer-tone">
               <SelectValue placeholder="Select tone" />
@@ -118,6 +123,12 @@ export function SummarizerForm({
             Clear
           </Button>
         </div>
+
+        {isLoading ? (
+          <p className="text-sm text-muted-foreground" role="status">
+            Summarizing your text. This can take a few seconds in API mode.
+          </p>
+        ) : null}
       </div>
     </section>
   )

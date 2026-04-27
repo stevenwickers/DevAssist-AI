@@ -1,5 +1,6 @@
 import express from 'express'
 import OpenAI from 'openai'
+import { getElapsedMs, logAiDemoEvent } from '../lib/ai-demo-logger.js'
 import { createRateLimit } from '../middleware/rate-limit.js'
 import { retrievePortfolioChunks } from '../lib/portfolio/retrieve-chunks.js'
 import { buildPortfolioChatMessages } from '../lib/portfolio/build-portfolio-chat-messages.js'
@@ -122,14 +123,42 @@ router.post('/portfolio-chat', portfolioRateLimit, async (req, res) => {
   }
 
   try {
+    const startedAt = performance.now()
+    const trimmedMessage = message.trim()
+
+    logAiDemoEvent('Express API received request', {
+      route: 'POST /ai/portfolio-chat',
+      promptCharacters: trimmedMessage.length,
+      historyMessages: history.length,
+    })
+
+    logAiDemoEvent('Retrieving portfolio context', {
+      route: 'POST /ai/portfolio-chat',
+    })
+
     const retrievedChunks = await retrievePortfolioChunks(message)
+
+    logAiDemoEvent('Portfolio context retrieved', {
+      route: 'POST /ai/portfolio-chat',
+      chunks: retrievedChunks.length,
+    })
+
+    const messages = buildPortfolioChatMessages({
+      message,
+      history: history as PortfolioHistoryMessage[],
+      retrievedChunks,
+    })
+
+    logAiDemoEvent('Calling OpenAI chat completions API', {
+      route: 'POST /ai/portfolio-chat',
+      model: portfolioChatModel,
+      messages: messages.length,
+      chunks: retrievedChunks.length,
+    })
+
     const completion = await openai.chat.completions.create({
       model: portfolioChatModel,
-      messages: buildPortfolioChatMessages({
-        message,
-        history: history as PortfolioHistoryMessage[],
-        retrievedChunks,
-      }),
+      messages,
     })
 
     const reply = completion.choices[0].message.content?.trim()
@@ -150,6 +179,14 @@ router.post('/portfolio-chat', portfolioRateLimit, async (req, res) => {
         ])
       ).values()
     )
+
+    logAiDemoEvent('OpenAI response received', {
+      route: 'POST /ai/portfolio-chat',
+      model: portfolioChatModel,
+      durationMs: getElapsedMs(startedAt),
+      replyCharacters: reply.length,
+      sources: dedupedSources.length,
+    })
 
     res.json({
       reply,

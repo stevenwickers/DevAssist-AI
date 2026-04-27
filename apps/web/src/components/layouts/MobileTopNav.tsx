@@ -4,6 +4,7 @@ import { Link, useRouterState } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button.tsx'
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetHeader,
   SheetTitle,
@@ -71,25 +72,28 @@ export function MobileTopNav() {
               const active = isItemActive(pathname, item.to)
 
               return (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className={cn(
-                    'flex items-start gap-3 rounded-xl px-3 py-3 text-sm transition-colors',
-                    'hover:bg-muted hover:text-foreground',
-                    active ? 'bg-muted text-foreground' : 'text-muted-foreground'
-                  )}
-                >
-                  <Icon className="mt-0.5 size-4 shrink-0" />
-                  <div className="min-w-0">
-                    <div className="font-medium">{item.title}</div>
-                    {item.description ? (
-                      <p className="mt-0.5 text-xs text-muted-foreground">
-                        {item.description}
-                      </p>
-                    ) : null}
-                  </div>
-                </Link>
+                <SheetClose key={item.to} asChild>
+                  <Link
+                    to={item.to}
+                    className={cn(
+                      'flex items-start gap-3 rounded-xl px-3 py-3 text-sm transition-colors',
+                      'hover:bg-muted hover:text-foreground',
+                      active
+                        ? 'bg-muted text-foreground'
+                        : 'text-muted-foreground'
+                    )}
+                  >
+                    <Icon className="mt-0.5 size-4 shrink-0" />
+                    <div className="min-w-0">
+                      <div className="font-medium">{item.title}</div>
+                      {item.description ? (
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                          {item.description}
+                        </p>
+                      ) : null}
+                    </div>
+                  </Link>
+                </SheetClose>
               )
             })}
           </nav>

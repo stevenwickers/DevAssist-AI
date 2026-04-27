@@ -19,7 +19,7 @@ export function CodeExplainerPage() {
   const { useApi } = useDataSource()
 
   const handleSubmit = async () => {
-    if (!code.trim()) return
+    if (isLoading || !code.trim()) return
 
     setIsLoading(true)
     setError(null)
@@ -42,6 +42,8 @@ export function CodeExplainerPage() {
   }
 
   const handleClear = () => {
+    if (isLoading) return
+
     setCode('')
     setResult(null)
     setError(null)

@@ -34,11 +34,10 @@ export function PortfolioChatPage() {
 
   const handleSend = async () => {
     const trimmed = input.trim()
-    if (!trimmed) return
+    if (isLoading || !trimmed) return
 
     const nextUserMessage = createMessage('user', trimmed)
 
-    debugger
     setMessages((prev) => [...prev, nextUserMessage])
     setInput('')
     setIsLoading(true)
@@ -63,7 +62,6 @@ export function PortfolioChatPage() {
         'Something went wrong while generating a response. Please try again.'
       )
 
-      debugger
       setMessages((prev) => [...prev, errorMessage])
     } finally {
       setIsLoading(false)
@@ -71,6 +69,8 @@ export function PortfolioChatPage() {
   }
 
   const handleReset = () => {
+    if (isLoading) return
+
     setInput('')
     setIsLoading(false)
     setMessages([

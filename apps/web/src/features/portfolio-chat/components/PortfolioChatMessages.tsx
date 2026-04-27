@@ -1,4 +1,4 @@
-import { Bot, User2 } from 'lucide-react'
+import { Bot, Loader2, User2 } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge.tsx'
 import { Skeleton } from '@/components/ui/skeleton.tsx'
@@ -26,10 +26,18 @@ function EmptyState() {
 
 function LoadingMessage() {
   return (
-    <div className="rounded-2xl border bg-card p-4 shadow-sm">
+    <div
+      className="rounded-2xl border bg-card p-4 shadow-sm"
+      aria-live="polite"
+      aria-busy="true"
+    >
       <div className="mb-3 flex items-center gap-2">
         <Bot className="size-4 text-muted-foreground" />
         <span className="text-sm font-medium">Portfolio Assistant</span>
+      </div>
+      <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
+        <Loader2 className="size-4 animate-spin" />
+        Generating a grounded answer...
       </div>
       <Skeleton className="mb-2 h-4 w-full" />
       <Skeleton className="mb-2 h-4 w-[92%]" />

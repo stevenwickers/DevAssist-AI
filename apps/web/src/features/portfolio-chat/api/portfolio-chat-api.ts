@@ -31,7 +31,6 @@ export async function sendPortfolioChat(
 
   const data = (await response.json()) as PortfolioChatResponse
 
-  debugger
   return {
     reply: data.reply,
     sources: data.sources,

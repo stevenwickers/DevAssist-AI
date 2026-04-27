@@ -54,7 +54,14 @@ function ResultCard({
 
 function LoadingCards() {
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-4" aria-live="polite" aria-busy="true">
+      <div className="rounded-2xl border bg-card p-4 shadow-sm sm:p-5">
+        <p className="text-sm font-medium">Generating explanation...</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          The AI response is on its way.
+        </p>
+      </div>
+
       <div className="rounded-2xl border bg-card p-4 shadow-sm sm:p-5">
         <Skeleton className="mb-4 h-5 w-40" />
         <Skeleton className="mb-2 h-4 w-full" />

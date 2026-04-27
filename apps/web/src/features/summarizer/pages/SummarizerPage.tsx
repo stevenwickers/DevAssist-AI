@@ -16,7 +16,7 @@ export function SummarizerPage() {
   const { useApi } = useDataSource()
 
   const handleSubmit = async () => {
-    if (!text.trim()) return
+    if (isLoading || !text.trim()) return
 
     setIsLoading(true)
     setError(null)
@@ -39,6 +39,8 @@ export function SummarizerPage() {
   }
 
   const handleClear = () => {
+    if (isLoading) return
+
     setText('')
     setResult(null)
     setError(null)

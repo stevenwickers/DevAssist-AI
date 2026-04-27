@@ -19,7 +19,10 @@ export function PortfolioChatForm({
   const isDisabled = !value.trim() || isLoading
 
   return (
-    <section className="rounded-2xl border bg-card p-4 shadow-sm sm:p-5">
+    <section
+      className="rounded-2xl border bg-card p-4 shadow-sm sm:p-5"
+      aria-busy={isLoading}
+    >
       <div className="mb-3 space-y-1">
         <h2 className="text-base font-semibold">Ask about my experience</h2>
         <p className="text-sm text-muted-foreground">
@@ -33,6 +36,7 @@ export function PortfolioChatForm({
           onChange={(event) => onChange(event.target.value)}
           placeholder="Example: What kinds of backend APIs has Steven built?"
           className="min-h-[120px] resize-y"
+          disabled={isLoading}
         />
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -51,7 +55,9 @@ export function PortfolioChatForm({
           </Button>
 
           <p className="text-xs text-muted-foreground">
-            This proof of concept returns grounded answers based on portfolio-related context.
+            {isLoading
+              ? 'Generating a grounded answer. This can take a few seconds in API mode.'
+              : 'This proof of concept returns grounded answers based on portfolio-related context.'}
           </p>
         </div>
       </div>
