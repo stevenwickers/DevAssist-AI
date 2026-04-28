@@ -7,20 +7,42 @@
 [![OpenAI](https://img.shields.io/badge/OpenAI-API-412991?logo=openai&logoColor=white)](https://platform.openai.com/docs)
 [![npm workspaces](https://img.shields.io/badge/npm-workspaces-cb3837?logo=npm&logoColor=white)](https://docs.npmjs.com/cli/using-npm/workspaces)
 
-DevAssist AI is a full-stack AI developer toolkit built with React, Express, TypeScript, and OpenAI. It gives users practical AI tools for summarizing text, explaining code, and asking portfolio questions through a Retrieval-Augmented Generation (RAG) chat experience.
+DevAssist AI is a full-stack AI developer toolkit built with React, Express, TypeScript, and OpenAI. It showcases real-world AI patterns including structured prompting, API orchestration, and a Retrieval-Augmented Generation (RAG) pipeline for grounded responses.
 
 The app is designed to work for two audiences:
 
 - **Non-technical users** can open the web app, choose a tool, and use AI through a polished interface with mock data or real API calls.
 - **Technical users** can study the codebase as a working example of OpenAI integration, API validation, rate limiting, Swagger docs, and a simple RAG pipeline.
 
-## Demo
+---
 
-<p align="center">
-  <img src="./assets/demo.gif" alt="DevAssist AI demo" width="900" />
-</p>
+## 🎬 Demo
 
-## What It Does
+### 🔍 Portfolio Chat
+
+![Portfolio Chat](./assets/demo-portfolio.gif)
+
+### ✨ Summarizer
+
+![Summarizer](./assets/demo-summarizer.gif)
+
+### ✏️ Code Explainer
+
+![Code Explainer](./assets/demo-code.gif)
+
+### 🖥️ Application Overview
+
+![Application Overview](./assets/demo-app.gif)
+
+These demos showcase real AI workflows including summarization, code explanation, and a RAG-powered portfolio assistant.
+
+---
+
+## ⭐ Key Concept
+
+DevAssist AI demonstrates a full-stack AI architecture where a React frontend communicates with an Express API that manages OpenAI interactions, validation, rate limiting, and a Retrieval-Augmented Generation (RAG) pipeline for grounded responses.
+
+## 🚀 Capabilities
 
 - **Smart Summarizer** turns long text into a summary, key takeaways, and action items.
 - **Code Explainer** explains pasted code in plain English with step-by-step notes, important concepts, and improvement ideas.
@@ -44,6 +66,109 @@ React app
   -> OpenAI chat and embeddings APIs
   -> structured response back to React
 ```
+
+## 🏗️ Application Architecture
+
+```mermaid
+flowchart TD
+
+%% Layers
+subgraph USER["👤 User Experience Layer"]
+  User["User"]
+  Web["React Web App<br/>Vite • TypeScript • TanStack Router<br/>AI Tools • Theme Toggle • Mock/API Toggle"]
+end
+
+subgraph API["⚙️ Express API Layer"]
+  Express["Express API<br/>Validation • Rate Limiting • Swagger Docs"]
+  Ask["POST /ai/ask<br/>Summarizer • Code Explainer"]
+  Chat["POST /ai/portfolio-chat<br/>RAG Portfolio Chat"]
+end
+
+subgraph RAG["🧠 RAG Pipeline"]
+  Markdown["Portfolio Markdown Files<br/>data/portfolio"]
+  Ingest["Ingestion Script<br/>Chunk Documents"]
+  Embeddings["OpenAI Embeddings<br/>text-embedding-3-small"]
+  Index["Local Vector Index<br/>data/portfolio-index.json"]
+  Retrieve["Retrieve Top Chunks<br/>Cosine Similarity"]
+end
+
+subgraph AI["🤖 OpenAI Layer"]
+  ChatModel["Chat Model<br/>Structured AI Responses"]
+end
+
+User --> Web
+
+Web -->|Mock Mode| Mock["Local Mock Responses"]
+Web -->|API Mode| Express
+
+Express --> Ask
+Express --> Chat
+
+Ask --> ChatModel
+
+Markdown --> Ingest
+Ingest --> Embeddings
+Embeddings --> Index
+
+Chat --> Retrieve
+Retrieve --> Index
+Retrieve --> ChatModel
+
+ChatModel --> Express
+Express --> Web
+Web --> User
+
+%% Styling
+classDef user fill:#e0f2fe,stroke:#0284c7,stroke-width:2px,color:#0f172a;
+classDef api fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#0f172a;
+classDef rag fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#0f172a;
+classDef ai fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#0f172a;
+classDef mock fill:#f3f4f6,stroke:#9ca3af,stroke-width:1px,color:#374151;
+
+class User,Web user;
+class Express,Ask,Chat api;
+class Markdown,Ingest,Embeddings,Index,Retrieve rag;
+class ChatModel ai;
+class Mock mock;
+```
+
+This architecture keeps OpenAI interactions on the server, enabling secure API usage, controlled prompting, and a reusable RAG pipeline that can scale beyond a single application.
+
+## 🔄 Request Lifecycle (RAG Flow)
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant UI as React App
+    participant API as Express API
+    participant RAG as Retrieval Layer
+    participant OpenAI
+
+    User->>UI: Enter prompt / question
+
+    alt Mock Mode
+        UI-->>User: Return mock response
+    else API Mode
+        UI->>API: POST /ai/ask or /ai/portfolio-chat
+
+        API->>API: Validate request\nRate limit\nBuild prompt
+
+        alt Portfolio Chat (RAG)
+            API->>RAG: Retrieve relevant chunks
+            RAG->>RAG: Embed question
+            RAG->>RAG: Rank chunks (cosine similarity)
+            RAG-->>API: Top matching context
+        end
+
+        API->>OpenAI: Send prompt + context
+        OpenAI-->>API: Structured response
+
+        API-->>UI: JSON response
+        UI-->>User: Render answer + sources
+    end
+```
+
+This flow shows how DevAssist AI handles both direct AI prompts and RAG-based queries, keeping retrieval, validation, and OpenAI interactions securely within the API layer.
 
 ## Tech Stack
 
@@ -229,6 +354,8 @@ Example response:
 ```
 
 The API validates request shape, limits prompt size, rate-limits requests per client IP, and keeps the OpenAI API key on the server.
+
+# Technical Deep Dive
 
 ## RAG Overview
 
@@ -450,7 +577,7 @@ npm run start:api        # Build and start the compiled API
 └── tsconfig.json
 ```
 
-## Production Improvements
+## 🔧 Production Improvements
 
 Possible next steps:
 
@@ -463,13 +590,34 @@ Possible next steps:
 - Link source badges directly to source documents or public URLs.
 - Restrict CORS origins for deployed environments.
 
+## 🔗 Related Systems
+
+This project complements:
+
+- NodeMovieApi — backend API architecture
+- DotNetMovieApi — multi-stack API implementation
+- Postgres Movie Platform — shared data layer
+
+Together, these projects demonstrate full-stack, multi-layer system design across frontend, API, and data platform architectures.
+
+## 👨‍💻 Author
+
+**Steven Wickers**
+Senior / Lead Frontend Engineer
+React • TypeScript • Node • C# • PostgreSQL • Cloud
+
+---
+
+## 🔍 Keywords
+
+OpenAI API, Retrieval-Augmented Generation (RAG), React, TypeScript, Vite, Express API, Full-Stack AI Application, Embeddings, Prompt Engineering, AI Developer Tools
+
 ## Notes
 
 - `apps/api/dist` and `apps/web/dist` are generated build outputs.
 - Do not edit generated files in `dist`; update files in `src` and rebuild.
 - The frontend dev server proxies `/ai` requests to the API server with Vite.
 - API route docs are generated from JSDoc comments in `apps/api/src/routes`.
-- `RAG_ARTICLE.md` is now represented in this README as the technical RAG section.
 
 ## References
 
